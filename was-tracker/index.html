@@ -1,0 +1,562 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>WAS Concert Tracker — LIMBO</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #0A0A0A;
+      --surface: #111111;
+      --surface2: #181818;
+      --border: #222222;
+      --text: #E8E8E8;
+      --muted: #555555;
+      --accent: #FFFFFF;
+      --red: #FF3B3B;
+      --red-bg: rgba(255, 59, 59, 0.07);
+      --red-border: rgba(255, 59, 59, 0.35);
+      --yellow: #F5C542;
+      --yellow-bg: rgba(245, 197, 66, 0.06);
+      --yellow-border: rgba(245, 197, 66, 0.3);
+      --green: #3DBA6F;
+      --green-bg: rgba(61, 186, 111, 0.05);
+      --green-border: rgba(61, 186, 111, 0.2);
+      --font: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
+    }
+
+    html, body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--font);
+      min-height: 100vh;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* ── HEADER ── */
+    header {
+      padding: 48px 20px 32px;
+      text-align: center;
+      border-bottom: 1px solid var(--border);
+      background: linear-gradient(180deg, #0F0F0F 0%, var(--bg) 100%);
+    }
+
+    .eyebrow {
+      font-size: 10px;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 10px;
+    }
+
+    .concert-title {
+      font-size: clamp(22px, 5vw, 38px);
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--accent);
+      line-height: 1.1;
+    }
+
+    .concert-subtitle {
+      margin-top: 6px;
+      font-size: 12px;
+      letter-spacing: 0.15em;
+      color: var(--muted);
+      text-transform: uppercase;
+    }
+
+    /* ── COUNTDOWN ── */
+    .countdown-wrap {
+      margin: 28px auto 0;
+      display: inline-flex;
+      gap: 16px;
+      align-items: flex-end;
+    }
+
+    .countdown-unit {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .countdown-num {
+      font-size: clamp(28px, 6vw, 48px);
+      font-weight: 700;
+      line-height: 1;
+      color: var(--accent);
+      font-variant-numeric: tabular-nums;
+      letter-spacing: -0.02em;
+    }
+
+    .countdown-label {
+      font-size: 9px;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+
+    .countdown-sep {
+      font-size: 28px;
+      font-weight: 300;
+      color: var(--border);
+      line-height: 1;
+      padding-bottom: 10px;
+    }
+
+    /* ── PROGRESS ── */
+    .progress-section {
+      max-width: 680px;
+      margin: 32px auto 0;
+      padding: 0 20px;
+    }
+
+    .progress-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      margin-bottom: 10px;
+    }
+
+    .progress-label {
+      font-size: 11px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+
+    .progress-count {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text);
+    }
+
+    .progress-count span {
+      color: var(--muted);
+      font-weight: 400;
+    }
+
+    .progress-bar-track {
+      height: 4px;
+      background: var(--border);
+      border-radius: 999px;
+      overflow: hidden;
+    }
+
+    .progress-bar-fill {
+      height: 100%;
+      border-radius: 999px;
+      background: linear-gradient(90deg, #3DBA6F, #4DD980);
+      transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    /* ── MAIN CONTENT ── */
+    main {
+      max-width: 680px;
+      margin: 0 auto;
+      padding: 32px 20px 80px;
+      display: flex;
+      flex-direction: column;
+      gap: 28px;
+    }
+
+    /* ── SECTION ── */
+    .section-heading {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+
+    .section-icon {
+      font-size: 14px;
+      line-height: 1;
+    }
+
+    .section-title {
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+    }
+
+    .section-badge {
+      margin-left: auto;
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      padding: 2px 8px;
+      border-radius: 999px;
+    }
+
+    /* ── CARD ── */
+    .card {
+      border-radius: 10px;
+      padding: 14px 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      position: relative;
+      transition: transform 0.15s ease;
+    }
+
+    .card:active { transform: scale(0.99); }
+
+    .card-top {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .card-name {
+      font-size: 14px;
+      font-weight: 600;
+      line-height: 1.35;
+      flex: 1;
+    }
+
+    .card-meta {
+      display: flex;
+      gap: 6px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .pill {
+      font-size: 10px;
+      font-weight: 500;
+      letter-spacing: 0.04em;
+      padding: 3px 8px;
+      border-radius: 999px;
+      white-space: nowrap;
+    }
+
+    /* ── OVERDUE ── */
+    .section-overdue .section-title { color: var(--red); }
+    .section-overdue .section-badge {
+      background: var(--red-bg);
+      color: var(--red);
+      border: 1px solid var(--red-border);
+    }
+
+    .section-overdue .card {
+      background: var(--red-bg);
+      border: 1px solid var(--red-border);
+    }
+
+    .section-overdue .card-name { color: var(--text); }
+
+    .pill-overdue {
+      background: rgba(255, 59, 59, 0.15);
+      color: var(--red);
+      border: 1px solid rgba(255, 59, 59, 0.3);
+    }
+
+    .pill-owner-red {
+      background: rgba(255,255,255,0.05);
+      color: #999;
+      border: 1px solid var(--border);
+    }
+
+    /* ── IN PROGRESS ── */
+    .section-progress .section-title { color: var(--yellow); }
+    .section-progress .section-badge {
+      background: var(--yellow-bg);
+      color: var(--yellow);
+      border: 1px solid var(--yellow-border);
+    }
+
+    .section-progress .card {
+      background: var(--yellow-bg);
+      border: 1px solid var(--yellow-border);
+    }
+
+    .pill-inprogress {
+      background: rgba(245, 197, 66, 0.12);
+      color: var(--yellow);
+      border: 1px solid rgba(245, 197, 66, 0.25);
+    }
+
+    .pill-owner-yellow {
+      background: rgba(255,255,255,0.05);
+      color: #999;
+      border: 1px solid var(--border);
+    }
+
+    /* ── DONE ── */
+    .section-done .section-title { color: var(--green); }
+    .section-done .section-badge {
+      background: var(--green-bg);
+      color: var(--green);
+      border: 1px solid var(--green-border);
+    }
+
+    .section-done .card {
+      background: var(--green-bg);
+      border: 1px solid var(--green-border);
+      opacity: 0.6;
+    }
+
+    .section-done .card-name {
+      text-decoration: line-through;
+      color: var(--muted);
+    }
+
+    .pill-done {
+      background: rgba(61, 186, 111, 0.12);
+      color: var(--green);
+      border: 1px solid rgba(61, 186, 111, 0.25);
+    }
+
+    .pill-owner-green {
+      background: rgba(255,255,255,0.04);
+      color: #666;
+      border: 1px solid #222;
+    }
+
+    /* ── DIVIDER ── */
+    .section-divider {
+      height: 1px;
+      background: var(--border);
+      margin: 0;
+    }
+
+    /* ── FOOTER ── */
+    footer {
+      text-align: center;
+      padding: 24px 20px;
+      border-top: 1px solid var(--border);
+      font-size: 10px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+
+    footer strong {
+      color: #444;
+    }
+
+    /* ── MOBILE ── */
+    @media (max-width: 480px) {
+      .countdown-wrap { gap: 10px; }
+      .countdown-sep { font-size: 22px; padding-bottom: 8px; }
+      .card-meta { gap: 4px; }
+      .pill { font-size: 9px; padding: 2px 7px; }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <p class="eyebrow">LIMBO × The Signal Network</p>
+  <h1 class="concert-title">WAS CONCERT — APRIL 18, 2026</h1>
+  <p class="concert-subtitle">SMDC Festival Grounds · Tour Finale</p>
+
+  <div class="countdown-wrap" id="countdown">
+    <div class="countdown-unit">
+      <span class="countdown-num" id="cd-days">--</span>
+      <span class="countdown-label">Days</span>
+    </div>
+    <span class="countdown-sep">:</span>
+    <div class="countdown-unit">
+      <span class="countdown-num" id="cd-hours">--</span>
+      <span class="countdown-label">Hours</span>
+    </div>
+    <span class="countdown-sep">:</span>
+    <div class="countdown-unit">
+      <span class="countdown-num" id="cd-mins">--</span>
+      <span class="countdown-label">Mins</span>
+    </div>
+    <span class="countdown-sep">:</span>
+    <div class="countdown-unit">
+      <span class="countdown-num" id="cd-secs">--</span>
+      <span class="countdown-label">Secs</span>
+    </div>
+  </div>
+</header>
+
+<div class="progress-section">
+  <div class="progress-header">
+    <span class="progress-label">Overall Progress</span>
+    <span class="progress-count" id="progress-text">2 <span>of 9 tasks complete</span></span>
+  </div>
+  <div class="progress-bar-track">
+    <div class="progress-bar-fill" id="progress-fill" style="width: 22.2%"></div>
+  </div>
+</div>
+
+<main>
+
+  <!-- ── OVERDUE ── -->
+  <section class="section-overdue">
+    <div class="section-heading">
+      <span class="section-icon">🔴</span>
+      <span class="section-title">Overdue</span>
+      <span class="section-badge">2 tasks</span>
+    </div>
+
+    <div style="display:flex;flex-direction:column;gap:8px;">
+
+      <div class="card">
+        <div class="card-top">
+          <span class="card-name">SM Ihawan Strip venue coordination</span>
+        </div>
+        <div class="card-meta">
+          <span class="pill pill-owner-red">👤 Cassey</span>
+          <span class="pill pill-overdue">Due Mar 10 · 12 DAYS OVERDUE</span>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-top">
+          <span class="card-name">Freebies identification + sourcing</span>
+        </div>
+        <div class="card-meta">
+          <span class="pill pill-owner-red">👤 Harbies</span>
+          <span class="pill pill-overdue">Due Mar 31 · URGENT</span>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <div class="section-divider"></div>
+
+  <!-- ── IN PROGRESS ── -->
+  <section class="section-progress">
+    <div class="section-heading">
+      <span class="section-icon">🟡</span>
+      <span class="section-title">In Progress</span>
+      <span class="section-badge">5 tasks</span>
+    </div>
+
+    <div style="display:flex;flex-direction:column;gap:8px;">
+
+      <div class="card">
+        <div class="card-top">
+          <span class="card-name">Fan Zone activities finalization</span>
+        </div>
+        <div class="card-meta">
+          <span class="pill pill-owner-yellow">👤 Cassey</span>
+          <span class="pill pill-inprogress">Due Apr 18</span>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-top">
+          <span class="card-name">MOA Globe coordination</span>
+        </div>
+        <div class="card-meta">
+          <span class="pill pill-owner-yellow">👤 Cassey</span>
+          <span class="pill pill-inprogress">Due Apr 18</span>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-top">
+          <span class="card-name">Signal light supplier</span>
+        </div>
+        <div class="card-meta">
+          <span class="pill pill-owner-yellow">👤 Sammie</span>
+          <span class="pill pill-inprogress">Due Apr 18</span>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-top">
+          <span class="card-name">Merch costing file</span>
+        </div>
+        <div class="card-meta">
+          <span class="pill pill-owner-yellow">👤 Tere</span>
+          <span class="pill pill-inprogress">Due Apr 18</span>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-top">
+          <span class="card-name">Sticker supplier</span>
+        </div>
+        <div class="card-meta">
+          <span class="pill pill-owner-yellow">👤 Cassey + Tere</span>
+          <span class="pill pill-inprogress">Due Apr 18</span>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <div class="section-divider"></div>
+
+  <!-- ── DONE ── -->
+  <section class="section-done">
+    <div class="section-heading">
+      <span class="section-icon">✅</span>
+      <span class="section-title">Done</span>
+      <span class="section-badge">2 tasks</span>
+    </div>
+
+    <div style="display:flex;flex-direction:column;gap:8px;">
+
+      <div class="card">
+        <div class="card-top">
+          <span class="card-name">Table reservation for freebies</span>
+        </div>
+        <div class="card-meta">
+          <span class="pill pill-owner-green">👤 Team</span>
+          <span class="pill pill-done">Complete ✓</span>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-top">
+          <span class="card-name">Merch catalog (Tank, NFC Keychain, Package)</span>
+        </div>
+        <div class="card-meta">
+          <span class="pill pill-owner-green">👤 Tere</span>
+          <span class="pill pill-done">Complete ✓</span>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  <strong>LIMBO</strong> &nbsp;·&nbsp; One Blood One Bond &nbsp;·&nbsp; WAS 2026
+</footer>
+
+<script>
+  // ── COUNTDOWN ──
+  const concertDate = new Date('2026-04-18T19:00:00+08:00');
+
+  function pad(n) { return String(n).padStart(2, '0'); }
+
+  function tick() {
+    const now = new Date();
+    const diff = concertDate - now;
+    if (diff <= 0) {
+      document.getElementById('countdown').innerHTML =
+        '<span style="font-size:18px;letter-spacing:0.12em;color:var(--green)">🎉 IT\'S SHOWTIME</span>';
+      return;
+    }
+    const days  = Math.floor(diff / 864e5);
+    const hours = Math.floor((diff % 864e5) / 36e5);
+    const mins  = Math.floor((diff % 36e5) / 6e4);
+    const secs  = Math.floor((diff % 6e4) / 1e3);
+    document.getElementById('cd-days').textContent  = pad(days);
+    document.getElementById('cd-hours').textContent = pad(hours);
+    document.getElementById('cd-mins').textContent  = pad(mins);
+    document.getElementById('cd-secs').textContent  = pad(secs);
+  }
+
+  tick();
+  setInterval(tick, 1000);
+</script>
+
+</body>
+</html>
