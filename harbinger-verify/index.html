@@ -1,0 +1,726 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>LIMBO — Harbinger Verification Dashboard</title>
+  <style>
+    /* ── RESET & BASE ── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:        #0A0A0A;
+      --surface:   #111111;
+      --surface2:  #181818;
+      --surface3:  #222222;
+      --border:    #2a2a2a;
+      --accent:    #C8A45E;     /* LIMBO gold */
+      --accent2:   #8B5CF6;     /* deep purple */
+      --text:      #E8E8E8;
+      --muted:     #888888;
+      --green:     #22C55E;
+      --yellow:    #EAB308;
+      --red:       #EF4444;
+      --green-bg:  rgba(34,197,94,0.10);
+      --yellow-bg: rgba(234,179,8,0.10);
+      --red-bg:    rgba(239,68,68,0.10);
+      --radius:    10px;
+    }
+
+    html, body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+      font-size: 15px;
+      min-height: 100vh;
+    }
+
+    /* ── HEADER ── */
+    .header {
+      background: linear-gradient(135deg, #0f0f0f 0%, #1a1208 100%);
+      border-bottom: 1px solid var(--border);
+      padding: 18px 20px 16px;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    .header-inner {
+      max-width: 680px;
+      margin: 0 auto;
+    }
+    .header-top {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 14px;
+    }
+    .logo {
+      width: 36px;
+      height: 36px;
+      background: linear-gradient(135deg, var(--accent), #a0723a);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      flex-shrink: 0;
+    }
+    .header-titles h1 {
+      font-size: 17px;
+      font-weight: 700;
+      color: var(--accent);
+      letter-spacing: 0.5px;
+    }
+    .header-titles p {
+      font-size: 11px;
+      color: var(--muted);
+      margin-top: 1px;
+    }
+    .stats-row {
+      display: flex;
+      gap: 8px;
+    }
+    .stat-chip {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 4px 10px;
+      font-size: 11px;
+      color: var(--muted);
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+    .stat-chip .dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+    }
+    .dot-green  { background: var(--green); }
+    .dot-yellow { background: var(--yellow); }
+    .dot-red    { background: var(--red); }
+    .stat-chip span { color: var(--text); font-weight: 600; }
+
+    /* ── SEARCH ── */
+    .search-wrap {
+      max-width: 680px;
+      margin: 20px auto 0;
+      padding: 0 16px;
+    }
+    .search-box {
+      position: relative;
+    }
+    .search-icon {
+      position: absolute;
+      left: 14px;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 18px;
+      color: var(--muted);
+      pointer-events: none;
+    }
+    #searchInput {
+      width: 100%;
+      background: var(--surface);
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius);
+      color: var(--text);
+      font-size: 16px;
+      padding: 14px 14px 14px 44px;
+      outline: none;
+      transition: border-color 0.2s;
+      -webkit-appearance: none;
+    }
+    #searchInput:focus {
+      border-color: var(--accent);
+    }
+    #searchInput::placeholder {
+      color: var(--muted);
+    }
+    .search-hint {
+      margin-top: 8px;
+      font-size: 11px;
+      color: var(--muted);
+      text-align: center;
+    }
+
+    /* ── MAIN ── */
+    .main {
+      max-width: 680px;
+      margin: 0 auto;
+      padding: 16px 16px 40px;
+    }
+
+    /* ── SECTION LABEL ── */
+    .section-label {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 1.2px;
+      color: var(--muted);
+      text-transform: uppercase;
+      margin: 20px 0 10px;
+    }
+
+    /* ── RESULT CARD ── */
+    .result-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      margin-bottom: 10px;
+      overflow: hidden;
+      transition: border-color 0.2s;
+    }
+    .result-card:hover { border-color: #444; }
+    .result-card.verified  { border-left: 3px solid var(--green); }
+    .result-card.flagged   { border-left: 3px solid var(--yellow); }
+    .result-card.rejected  { border-left: 3px solid var(--red); }
+
+    .card-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 14px 10px;
+    }
+    .card-names { flex: 1; min-width: 0; }
+    .fb-name {
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--text);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .discord-name {
+      font-size: 12px;
+      color: var(--muted);
+      margin-top: 2px;
+    }
+    .discord-name .handle {
+      color: var(--accent2);
+      font-weight: 600;
+    }
+
+    /* score badge */
+    .score-badge {
+      flex-shrink: 0;
+      margin-left: 12px;
+      padding: 5px 10px;
+      border-radius: 20px;
+      font-size: 13px;
+      font-weight: 800;
+      letter-spacing: 0.3px;
+    }
+    .score-green  { background: var(--green-bg);  color: var(--green); }
+    .score-yellow { background: var(--yellow-bg); color: var(--yellow); }
+    .score-red    { background: var(--red-bg);    color: var(--red); }
+
+    /* meta row */
+    .card-meta {
+      padding: 0 14px 10px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      font-size: 11px;
+    }
+    .meta-tag {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      padding: 2px 7px;
+      color: var(--muted);
+    }
+    .meta-tag strong { color: var(--text); }
+
+    /* actions */
+    .card-actions {
+      display: flex;
+      gap: 8px;
+      padding: 10px 14px 14px;
+      border-top: 1px solid var(--border);
+    }
+    .btn {
+      flex: 1;
+      padding: 10px 8px;
+      border: none;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: opacity 0.15s, transform 0.1s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 5px;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .btn:active { transform: scale(0.96); opacity: 0.85; }
+    .btn-verify  { background: var(--green-bg);  color: var(--green);  border: 1px solid rgba(34,197,94,0.3); }
+    .btn-flag    { background: var(--yellow-bg); color: var(--yellow); border: 1px solid rgba(234,179,8,0.3); }
+    .btn-reject  { background: var(--red-bg);    color: var(--red);    border: 1px solid rgba(239,68,68,0.3); }
+    .btn:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
+
+    /* status done banner */
+    .status-banner {
+      padding: 8px 14px;
+      font-size: 12px;
+      font-weight: 700;
+      text-align: center;
+    }
+    .status-banner.verified { background: var(--green-bg);  color: var(--green); }
+    .status-banner.flagged  { background: var(--yellow-bg); color: var(--yellow); }
+    .status-banner.rejected { background: var(--red-bg);    color: var(--red); }
+
+    /* ── EMPTY STATE ── */
+    .empty-state {
+      text-align: center;
+      padding: 48px 20px;
+      color: var(--muted);
+    }
+    .empty-state .emoji { font-size: 36px; margin-bottom: 10px; }
+    .empty-state p { font-size: 14px; }
+
+    /* ── RECENT LOG ── */
+    .log-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+    }
+    .log-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 14px;
+      border-bottom: 1px solid var(--border);
+      font-size: 13px;
+    }
+    .log-item:last-child { border-bottom: none; }
+    .log-icon {
+      font-size: 16px;
+      flex-shrink: 0;
+      width: 22px;
+      text-align: center;
+    }
+    .log-info { flex: 1; min-width: 0; }
+    .log-name {
+      font-weight: 600;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .log-sub { font-size: 11px; color: var(--muted); margin-top: 1px; }
+    .log-time { font-size: 11px; color: var(--muted); flex-shrink: 0; }
+
+    /* ── EXPORT BUTTON ── */
+    .export-wrap {
+      margin-top: 12px;
+    }
+    .btn-export {
+      width: 100%;
+      padding: 13px;
+      background: var(--surface);
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius);
+      color: var(--accent);
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      transition: background 0.15s, border-color 0.15s;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .btn-export:hover { background: var(--surface2); border-color: var(--accent); }
+    .btn-export:active { transform: scale(0.98); }
+
+    /* ── TOAST ── */
+    #toast {
+      position: fixed;
+      bottom: 24px;
+      left: 50%;
+      transform: translateX(-50%) translateY(20px);
+      background: var(--surface3);
+      border: 1px solid var(--border);
+      border-radius: 24px;
+      padding: 10px 20px;
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--text);
+      opacity: 0;
+      transition: opacity 0.25s, transform 0.25s;
+      pointer-events: none;
+      white-space: nowrap;
+      z-index: 999;
+      max-width: 90vw;
+    }
+    #toast.show {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 380px) {
+      .header-titles h1 { font-size: 15px; }
+      .btn { font-size: 12px; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header class="header">
+  <div class="header-inner">
+    <div class="header-top">
+      <div class="logo">🩸</div>
+      <div class="header-titles">
+        <h1>LIMBO Harbinger Verify</h1>
+        <p>One Blood One Bond — FB Verification Tool</p>
+      </div>
+    </div>
+    <div class="stats-row" id="statsRow">
+      <!-- filled by JS -->
+    </div>
+  </div>
+</header>
+
+<!-- SEARCH -->
+<div class="search-wrap">
+  <div class="search-box">
+    <span class="search-icon">🔍</span>
+    <input
+      type="search"
+      id="searchInput"
+      autocomplete="off"
+      autocorrect="off"
+      spellcheck="false"
+      placeholder="I-type ang FB name ng subscriber..."
+    />
+  </div>
+  <p class="search-hint">Mag-type ng kahit anong bahagi ng pangalan</p>
+</div>
+
+<!-- MAIN CONTENT -->
+<main class="main">
+  <div id="searchSection" style="display:none;">
+    <div class="section-label" id="searchLabel">Mga resulta</div>
+    <div id="searchResults"></div>
+  </div>
+
+  <div id="recentSection">
+    <div class="section-label">📋 Mga Na-verify Kahapon (last 10)</div>
+    <div id="recentLog"></div>
+    <div class="export-wrap">
+      <button class="btn-export" onclick="exportCSV()">
+        📤 I-export bilang CSV (para kay Josh)
+      </button>
+    </div>
+  </div>
+</main>
+
+<!-- TOAST -->
+<div id="toast"></div>
+
+<script>
+// ═══════════════════════════════════════════════
+//  DATA & STATE
+// ═══════════════════════════════════════════════
+let members = [];
+let actionLog = JSON.parse(localStorage.getItem('limbo_log') || '[]');
+
+// Load JSON
+fetch('data/pending-members.json')
+  .then(r => r.json())
+  .then(data => {
+    members = data;
+    renderStats();
+    renderRecent();
+  })
+  .catch(() => {
+    // Fallback: show demo notice
+    showToast('⚠️ Walang data file. Subukan mo i-load locally.', 4000);
+  });
+
+// ═══════════════════════════════════════════════
+//  FUZZY SEARCH (pure JS, no dependencies)
+// ═══════════════════════════════════════════════
+function fuzzyScore(needle, haystack) {
+  const n = needle.toLowerCase();
+  const h = haystack.toLowerCase();
+  if (h.includes(n)) return 1.0;
+
+  // Score based on matching characters in order
+  let nIdx = 0, matches = 0;
+  for (let i = 0; i < h.length && nIdx < n.length; i++) {
+    if (h[i] === n[nIdx]) { matches++; nIdx++; }
+  }
+  return matches / n.length;
+}
+
+function searchMembers(query) {
+  if (!query.trim()) return [];
+  const q = query.trim().toLowerCase();
+
+  return members
+    .map(m => {
+      const score = Math.max(
+        fuzzyScore(q, m.submittedFbName || ''),
+        fuzzyScore(q, m.matchedSubscriberName || ''),
+        fuzzyScore(q, m.discordUsername || '')
+      );
+      return { ...m, searchScore: score };
+    })
+    .filter(m => m.searchScore > 0.35)
+    .sort((a, b) => b.searchScore - a.searchScore)
+    .slice(0, 8);
+}
+
+// ═══════════════════════════════════════════════
+//  RENDER HELPERS
+// ═══════════════════════════════════════════════
+function scoreClass(score) {
+  if (score >= 85) return 'score-green';
+  if (score >= 70) return 'score-yellow';
+  return 'score-red';
+}
+function scoreLabel(score) {
+  if (score >= 85) return '✅ Mataas';
+  if (score >= 70) return '⚠️ Kailangan tingnan';
+  return '❓ Hindi tiyak';
+}
+function confidenceText(score) {
+  if (score >= 85) return 'HIGH';
+  if (score >= 70) return 'MEDIUM';
+  return 'LOW';
+}
+
+function getMemberStatus(memberId) {
+  const entry = actionLog.find(l => l.memberId === memberId);
+  return entry ? entry.action : null;
+}
+
+function renderCard(m) {
+  const currentStatus = getMemberStatus(m.id);
+  const scoreNum = m.score;
+  const sCls = scoreClass(scoreNum);
+
+  let actionHtml = '';
+  if (currentStatus) {
+    const icons = { verified: '✅', flagged: '⚠️', rejected: '❌' };
+    const labels = { verified: 'Verified na!', flagged: 'Naka-flag', rejected: 'Rejected' };
+    actionHtml = `<div class="status-banner ${currentStatus}">${icons[currentStatus]} ${labels[currentStatus]}</div>`;
+  } else {
+    actionHtml = `
+      <div class="card-actions">
+        <button class="btn btn-verify"  onclick="doAction(${m.id},'verified')">✅ Verified na!</button>
+        <button class="btn btn-flag"    onclick="doAction(${m.id},'flagged')">⚠️ I-flag</button>
+        <button class="btn btn-reject"  onclick="doAction(${m.id},'rejected')">❌ Reject</button>
+      </div>`;
+  }
+
+  return `
+    <div class="result-card ${currentStatus || ''}" id="card-${m.id}">
+      <div class="card-header">
+        <div class="card-names">
+          <div class="fb-name">📘 ${escHtml(m.submittedFbName)}</div>
+          <div class="discord-name">Discord: <span class="handle">@${escHtml(m.discordUsername)}</span></div>
+        </div>
+        <div class="score-badge ${sCls}">${scoreNum.toFixed(0)}%</div>
+      </div>
+      <div class="card-meta">
+        <span class="meta-tag">Matched: <strong>${escHtml(m.matchedSubscriberName)}</strong></span>
+        <span class="meta-tag">Subbed: <strong>${escHtml(m.dateSubbed)}</strong></span>
+        <span class="meta-tag">Confidence: <strong>${confidenceText(scoreNum)}</strong></span>
+      </div>
+      ${actionHtml}
+    </div>`;
+}
+
+function renderStats() {
+  const pending  = members.filter(m => !getMemberStatus(m.id)).length;
+  const verified = actionLog.filter(l => l.action === 'verified').length;
+  const flagged  = actionLog.filter(l => l.action === 'flagged').length;
+  const rejected = actionLog.filter(l => l.action === 'rejected').length;
+
+  document.getElementById('statsRow').innerHTML = `
+    <div class="stat-chip"><div class="dot dot-green"></div>Verified: <span>${verified}</span></div>
+    <div class="stat-chip"><div class="dot dot-yellow"></div>Flagged: <span>${flagged}</span></div>
+    <div class="stat-chip"><div class="dot dot-red"></div>Pending: <span>${pending}</span></div>`;
+}
+
+function renderRecent() {
+  const log = [...actionLog].reverse().slice(0, 10);
+  const el = document.getElementById('recentLog');
+
+  if (!log.length) {
+    el.innerHTML = `
+      <div class="log-card">
+        <div class="empty-state">
+          <div class="emoji">📭</div>
+          <p>Wala pang aksyon. Magsimula ka na mag-verify!</p>
+        </div>
+      </div>`;
+    return;
+  }
+
+  const icons  = { verified: '✅', flagged: '⚠️', rejected: '❌' };
+  const labels = { verified: 'Verified na!', flagged: 'Naka-flag', rejected: 'Rejected' };
+
+  const items = log.map(entry => {
+    const m = members.find(x => x.id === entry.memberId);
+    const name = m ? m.submittedFbName : entry.fbName || '—';
+    const user = m ? `@${m.discordUsername}` : '—';
+    return `
+      <div class="log-item">
+        <div class="log-icon">${icons[entry.action]}</div>
+        <div class="log-info">
+          <div class="log-name">${escHtml(name)}</div>
+          <div class="log-sub">${escHtml(user)} · ${labels[entry.action]}</div>
+        </div>
+        <div class="log-time">${formatTime(entry.ts)}</div>
+      </div>`;
+  }).join('');
+
+  el.innerHTML = `<div class="log-card">${items}</div>`;
+}
+
+// ═══════════════════════════════════════════════
+//  ACTIONS
+// ═══════════════════════════════════════════════
+function doAction(memberId, action) {
+  const m = members.find(x => x.id === memberId);
+  if (!m) return;
+
+  // Remove any prior entry for this member
+  actionLog = actionLog.filter(l => l.memberId !== memberId);
+
+  actionLog.push({
+    memberId,
+    fbName: m.submittedFbName,
+    discordUsername: m.discordUsername,
+    matchedName: m.matchedSubscriberName,
+    score: m.score,
+    action,
+    ts: Date.now()
+  });
+  localStorage.setItem('limbo_log', JSON.stringify(actionLog));
+
+  // Update card in place
+  const card = document.getElementById(`card-${memberId}`);
+  if (card) {
+    card.outerHTML = renderCard(m);
+  }
+
+  const toastMsg = {
+    verified: `✅ Verified na si ${m.submittedFbName}!`,
+    flagged:  `⚠️ Na-flag si ${m.submittedFbName}`,
+    rejected: `❌ Rejected si ${m.submittedFbName}`
+  };
+  showToast(toastMsg[action]);
+  renderStats();
+  renderRecent();
+}
+
+// ═══════════════════════════════════════════════
+//  SEARCH HANDLER
+// ═══════════════════════════════════════════════
+let searchTimer;
+document.getElementById('searchInput').addEventListener('input', function() {
+  clearTimeout(searchTimer);
+  const q = this.value.trim();
+  searchTimer = setTimeout(() => {
+    const searchSection = document.getElementById('searchSection');
+    const recentSection = document.getElementById('recentSection');
+    const results       = document.getElementById('searchResults');
+    const label         = document.getElementById('searchLabel');
+
+    if (!q) {
+      searchSection.style.display = 'none';
+      recentSection.style.display = '';
+      return;
+    }
+
+    recentSection.style.display = 'none';
+    searchSection.style.display = '';
+
+    const found = searchMembers(q);
+    label.textContent = found.length
+      ? `${found.length} resulta para sa "${q}"`
+      : `Walang resulta para sa "${q}"`;
+
+    if (!found.length) {
+      results.innerHTML = `
+        <div class="empty-state">
+          <div class="emoji">🤷</div>
+          <p>Walang nakita. Subukan ng ibang spelling.</p>
+        </div>`;
+      return;
+    }
+
+    results.innerHTML = found.map(m => renderCard(m)).join('');
+  }, 200);
+});
+
+// ═══════════════════════════════════════════════
+//  EXPORT CSV
+// ═══════════════════════════════════════════════
+function exportCSV() {
+  if (!actionLog.length) {
+    showToast('📭 Wala pang aksyon para i-export.');
+    return;
+  }
+
+  const headers = ['FB Name', 'Discord Username', 'Matched Subscriber', 'Match Score (%)', 'Action', 'Timestamp'];
+  const rows = actionLog.map(l => [
+    `"${(l.fbName || '').replace(/"/g, '""')}"`,
+    `"${(l.discordUsername || '').replace(/"/g, '""')}"`,
+    `"${(l.matchedName || '').replace(/"/g, '""')}"`,
+    l.score || '',
+    l.action,
+    new Date(l.ts).toLocaleString('en-PH', { timeZone: 'Asia/Manila' })
+  ]);
+
+  const csv = [headers.join(','), ...rows.map(r => r.join(','))].join('\n');
+  const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+  const url  = URL.createObjectURL(blob);
+  const a    = document.createElement('a');
+  a.href     = url;
+  a.download = `limbo-harbinger-log-${new Date().toISOString().slice(0,10)}.csv`;
+  a.click();
+  URL.revokeObjectURL(url);
+
+  showToast(`✅ Nag-export ng ${actionLog.length} aksyon!`);
+}
+
+// ═══════════════════════════════════════════════
+//  UTILITIES
+// ═══════════════════════════════════════════════
+function escHtml(str) {
+  return String(str || '')
+    .replace(/&/g,'&amp;')
+    .replace(/</g,'&lt;')
+    .replace(/>/g,'&gt;')
+    .replace(/"/g,'&quot;');
+}
+
+function formatTime(ts) {
+  const now = Date.now();
+  const diff = Math.floor((now - ts) / 1000);
+  if (diff < 60)   return `${diff}s ago`;
+  if (diff < 3600) return `${Math.floor(diff/60)}m ago`;
+  if (diff < 86400) return `${Math.floor(diff/3600)}h ago`;
+  return new Date(ts).toLocaleDateString('en-PH', { month:'short', day:'numeric' });
+}
+
+let toastTimeout;
+function showToast(msg, duration = 2500) {
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.classList.add('show');
+  clearTimeout(toastTimeout);
+  toastTimeout = setTimeout(() => el.classList.remove('show'), duration);
+}
+</script>
+</body>
+</html>
