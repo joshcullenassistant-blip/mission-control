@@ -1,562 +1,512 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>WAS Concert Tracker — LIMBO</title>
-  <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>WAS Concert Tracker</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
 
-    :root {
-      --bg: #0A0A0A;
-      --surface: #111111;
-      --surface2: #181818;
-      --border: #222222;
-      --text: #E8E8E8;
-      --muted: #555555;
-      --accent: #FFFFFF;
-      --red: #FF3B3B;
-      --red-bg: rgba(255, 59, 59, 0.07);
-      --red-border: rgba(255, 59, 59, 0.35);
-      --yellow: #F5C542;
-      --yellow-bg: rgba(245, 197, 66, 0.06);
-      --yellow-border: rgba(245, 197, 66, 0.3);
-      --green: #3DBA6F;
-      --green-bg: rgba(61, 186, 111, 0.05);
-      --green-border: rgba(61, 186, 111, 0.2);
-      --font: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
-    }
+  :root {
+    --bg: #0A0A0A;
+    --card: #111111;
+    --elevated: #1A1A1A;
+    --border: #1E1E1E;
+    --text-primary: #FFFFFF;
+    --text-secondary: #666666;
+    --text-muted: #444444;
+    --red: #E53935;
+    --red-dim: #E5393520;
+    --green: #4CAF50;
+    --green-dim: #4CAF5015;
+  }
 
-    html, body {
-      background: var(--bg);
-      color: var(--text);
-      font-family: var(--font);
-      min-height: 100vh;
-      -webkit-font-smoothing: antialiased;
-    }
+  body {
+    font-family: 'Inter', -apple-system, sans-serif;
+    background: var(--bg);
+    color: var(--text-primary);
+    line-height: 1.5;
+    letter-spacing: -0.01em;
+    min-height: 100vh;
+    -webkit-font-smoothing: antialiased;
+  }
 
-    /* ── HEADER ── */
-    header {
-      padding: 48px 20px 32px;
-      text-align: center;
-      border-bottom: 1px solid var(--border);
-      background: linear-gradient(180deg, #0F0F0F 0%, var(--bg) 100%);
-    }
+  .container {
+    max-width: 860px;
+    margin: 0 auto;
+    padding: 48px 24px 80px;
+  }
 
-    .eyebrow {
-      font-size: 10px;
-      letter-spacing: 0.2em;
-      text-transform: uppercase;
-      color: var(--muted);
-      margin-bottom: 10px;
-    }
+  /* Header */
+  .header {
+    margin-bottom: 48px;
+    animation: fadeIn 0.6s ease;
+  }
 
-    .concert-title {
-      font-size: clamp(22px, 5vw, 38px);
-      font-weight: 700;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-      color: var(--accent);
-      line-height: 1.1;
-    }
+  .header-eyebrow {
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--text-secondary);
+    margin-bottom: 8px;
+  }
 
-    .concert-subtitle {
-      margin-top: 6px;
-      font-size: 12px;
-      letter-spacing: 0.15em;
-      color: var(--muted);
-      text-transform: uppercase;
-    }
+  .header-title {
+    font-size: 28px;
+    font-weight: 700;
+    letter-spacing: -0.03em;
+    margin-bottom: 4px;
+  }
 
-    /* ── COUNTDOWN ── */
-    .countdown-wrap {
-      margin: 28px auto 0;
-      display: inline-flex;
-      gap: 16px;
-      align-items: flex-end;
-    }
+  .header-sub {
+    font-size: 14px;
+    color: var(--text-secondary);
+    font-weight: 400;
+  }
 
-    .countdown-unit {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 4px;
-    }
+  /* Countdown */
+  .countdown-section {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 2px;
+    padding: 40px 32px;
+    margin-bottom: 32px;
+    text-align: center;
+    animation: fadeIn 0.6s ease 0.1s both;
+  }
 
-    .countdown-num {
-      font-size: clamp(28px, 6vw, 48px);
-      font-weight: 700;
-      line-height: 1;
-      color: var(--accent);
-      font-variant-numeric: tabular-nums;
-      letter-spacing: -0.02em;
-    }
+  .countdown-label {
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--text-secondary);
+    margin-bottom: 20px;
+  }
 
-    .countdown-label {
-      font-size: 9px;
-      letter-spacing: 0.18em;
-      text-transform: uppercase;
-      color: var(--muted);
-    }
+  .countdown-grid {
+    display: flex;
+    justify-content: center;
+    gap: 32px;
+  }
 
-    .countdown-sep {
-      font-size: 28px;
-      font-weight: 300;
-      color: var(--border);
-      line-height: 1;
-      padding-bottom: 10px;
-    }
+  .countdown-unit {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
 
-    /* ── PROGRESS ── */
-    .progress-section {
-      max-width: 680px;
-      margin: 32px auto 0;
-      padding: 0 20px;
-    }
+  .countdown-value {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 56px;
+    font-weight: 700;
+    letter-spacing: -0.04em;
+    line-height: 1;
+    color: var(--text-primary);
+  }
 
-    .progress-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: baseline;
-      margin-bottom: 10px;
-    }
+  .countdown-unit-label {
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    margin-top: 8px;
+  }
 
-    .progress-label {
-      font-size: 11px;
-      letter-spacing: 0.12em;
-      text-transform: uppercase;
-      color: var(--muted);
-    }
+  .countdown-separator {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 56px;
+    font-weight: 300;
+    color: var(--text-muted);
+    line-height: 1;
+    align-self: flex-start;
+  }
 
-    .progress-count {
-      font-size: 13px;
-      font-weight: 600;
-      color: var(--text);
-    }
+  .countdown-date {
+    font-size: 13px;
+    color: var(--text-secondary);
+    margin-top: 20px;
+    font-weight: 400;
+  }
 
-    .progress-count span {
-      color: var(--muted);
-      font-weight: 400;
-    }
+  /* Progress */
+  .progress-section {
+    margin-bottom: 40px;
+    animation: fadeIn 0.6s ease 0.2s both;
+  }
 
-    .progress-bar-track {
-      height: 4px;
-      background: var(--border);
-      border-radius: 999px;
-      overflow: hidden;
-    }
+  .progress-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin-bottom: 10px;
+  }
 
-    .progress-bar-fill {
-      height: 100%;
-      border-radius: 999px;
-      background: linear-gradient(90deg, #3DBA6F, #4DD980);
-      transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1);
-    }
+  .progress-text {
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--text-primary);
+  }
 
-    /* ── MAIN CONTENT ── */
-    main {
-      max-width: 680px;
-      margin: 0 auto;
-      padding: 32px 20px 80px;
-      display: flex;
-      flex-direction: column;
-      gap: 28px;
-    }
+  .progress-text span {
+    color: var(--text-secondary);
+    font-weight: 400;
+  }
 
-    /* ── SECTION ── */
-    .section-heading {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      margin-bottom: 12px;
-    }
+  .progress-percent {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    color: var(--text-secondary);
+  }
 
-    .section-icon {
-      font-size: 14px;
-      line-height: 1;
-    }
+  .progress-bar {
+    width: 100%;
+    height: 3px;
+    background: var(--border);
+    border-radius: 0;
+    overflow: hidden;
+  }
 
-    .section-title {
-      font-size: 10px;
-      font-weight: 700;
-      letter-spacing: 0.2em;
-      text-transform: uppercase;
-    }
+  .progress-fill {
+    height: 100%;
+    background: var(--text-primary);
+    width: 22.2%;
+    transition: width 1s ease;
+  }
 
-    .section-badge {
-      margin-left: auto;
-      font-size: 10px;
-      font-weight: 600;
-      letter-spacing: 0.08em;
-      padding: 2px 8px;
-      border-radius: 999px;
-    }
+  /* Task Sections */
+  .task-section {
+    margin-bottom: 32px;
+  }
 
-    /* ── CARD ── */
-    .card {
-      border-radius: 10px;
-      padding: 14px 16px;
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-      position: relative;
-      transition: transform 0.15s ease;
-    }
+  .task-section:nth-child(1) { animation: fadeIn 0.6s ease 0.3s both; }
+  .task-section:nth-child(2) { animation: fadeIn 0.6s ease 0.4s both; }
+  .task-section:nth-child(3) { animation: fadeIn 0.6s ease 0.5s both; }
 
-    .card:active { transform: scale(0.99); }
+  .section-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 12px;
+    padding-bottom: 8px;
+  }
 
-    .card-top {
-      display: flex;
-      align-items: flex-start;
-      justify-content: space-between;
-      gap: 12px;
-    }
+  .section-title {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--text-secondary);
+  }
 
-    .card-name {
-      font-size: 14px;
-      font-weight: 600;
-      line-height: 1.35;
-      flex: 1;
-    }
+  .section-count {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--text-muted);
+  }
 
-    .card-meta {
-      display: flex;
-      gap: 6px;
-      align-items: center;
-      flex-wrap: wrap;
-    }
+  .section-title.overdue { color: var(--red); }
+  .section-title.done { color: var(--text-muted); }
 
-    .pill {
-      font-size: 10px;
-      font-weight: 500;
-      letter-spacing: 0.04em;
-      padding: 3px 8px;
-      border-radius: 999px;
-      white-space: nowrap;
-    }
+  /* Task Items */
+  .task-item {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    padding: 14px 16px;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 2px;
+    margin-bottom: 4px;
+    transition: background 0.15s ease;
+  }
 
-    /* ── OVERDUE ── */
-    .section-overdue .section-title { color: var(--red); }
-    .section-overdue .section-badge {
-      background: var(--red-bg);
-      color: var(--red);
-      border: 1px solid var(--red-border);
-    }
+  .task-item:hover {
+    background: var(--elevated);
+  }
 
-    .section-overdue .card {
-      background: var(--red-bg);
-      border: 1px solid var(--red-border);
-    }
+  .task-item.overdue {
+    border-left: 2px solid var(--red);
+  }
 
-    .section-overdue .card-name { color: var(--text); }
+  .task-item.done {
+    opacity: 0.4;
+  }
 
-    .pill-overdue {
-      background: rgba(255, 59, 59, 0.15);
-      color: var(--red);
-      border: 1px solid rgba(255, 59, 59, 0.3);
-    }
+  .task-item.done .task-name {
+    text-decoration: line-through;
+    text-decoration-color: var(--text-muted);
+  }
 
-    .pill-owner-red {
-      background: rgba(255,255,255,0.05);
-      color: #999;
-      border: 1px solid var(--border);
-    }
+  .task-info {
+    flex: 1;
+    min-width: 0;
+  }
 
-    /* ── IN PROGRESS ── */
-    .section-progress .section-title { color: var(--yellow); }
-    .section-progress .section-badge {
-      background: var(--yellow-bg);
-      color: var(--yellow);
-      border: 1px solid var(--yellow-border);
-    }
+  .task-name {
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--text-primary);
+    margin-bottom: 4px;
+    letter-spacing: -0.01em;
+  }
 
-    .section-progress .card {
-      background: var(--yellow-bg);
-      border: 1px solid var(--yellow-border);
-    }
+  .task-meta {
+    font-size: 12px;
+    color: var(--text-secondary);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
 
-    .pill-inprogress {
-      background: rgba(245, 197, 66, 0.12);
-      color: var(--yellow);
-      border: 1px solid rgba(245, 197, 66, 0.25);
-    }
+  .task-assignee {
+    color: var(--text-secondary);
+  }
 
-    .pill-owner-yellow {
-      background: rgba(255,255,255,0.05);
-      color: #999;
-      border: 1px solid var(--border);
-    }
+  .task-due {
+    color: var(--text-muted);
+  }
 
-    /* ── DONE ── */
-    .section-done .section-title { color: var(--green); }
-    .section-done .section-badge {
-      background: var(--green-bg);
-      color: var(--green);
-      border: 1px solid var(--green-border);
-    }
+  .task-due.overdue {
+    color: var(--red);
+    font-weight: 500;
+  }
 
-    .section-done .card {
-      background: var(--green-bg);
-      border: 1px solid var(--green-border);
-      opacity: 0.6;
-    }
+  .task-status-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    flex-shrink: 0;
+    margin-top: 7px;
+    margin-left: 12px;
+  }
 
-    .section-done .card-name {
-      text-decoration: line-through;
-      color: var(--muted);
-    }
+  .task-status-dot.overdue { background: var(--red); }
+  .task-status-dot.in-progress { background: var(--text-secondary); }
+  .task-status-dot.done { background: var(--green); opacity: 0.5; }
 
-    .pill-done {
-      background: rgba(61, 186, 111, 0.12);
-      color: var(--green);
-      border: 1px solid rgba(61, 186, 111, 0.25);
-    }
+  /* Footer */
+  .footer {
+    margin-top: 48px;
+    padding-top: 24px;
+    border-top: 1px solid var(--border);
+    font-size: 12px;
+    color: var(--text-muted);
+    display: flex;
+    justify-content: space-between;
+    animation: fadeIn 0.6s ease 0.6s both;
+  }
 
-    .pill-owner-green {
-      background: rgba(255,255,255,0.04);
-      color: #666;
-      border: 1px solid #222;
-    }
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
 
-    /* ── DIVIDER ── */
-    .section-divider {
-      height: 1px;
-      background: var(--border);
-      margin: 0;
-    }
-
-    /* ── FOOTER ── */
-    footer {
-      text-align: center;
-      padding: 24px 20px;
-      border-top: 1px solid var(--border);
-      font-size: 10px;
-      letter-spacing: 0.12em;
-      text-transform: uppercase;
-      color: var(--muted);
-    }
-
-    footer strong {
-      color: #444;
-    }
-
-    /* ── MOBILE ── */
-    @media (max-width: 480px) {
-      .countdown-wrap { gap: 10px; }
-      .countdown-sep { font-size: 22px; padding-bottom: 8px; }
-      .card-meta { gap: 4px; }
-      .pill { font-size: 9px; padding: 2px 7px; }
-    }
-  </style>
+  @media (max-width: 600px) {
+    .container { padding: 32px 16px 60px; }
+    .countdown-value { font-size: 36px; }
+    .countdown-separator { font-size: 36px; }
+    .countdown-grid { gap: 16px; }
+    .countdown-section { padding: 28px 20px; }
+    .header-title { font-size: 22px; }
+    .task-item { flex-direction: column; }
+    .task-status-dot { display: none; }
+  }
+</style>
 </head>
 <body>
+<div class="container">
+  <div class="header">
+    <div class="header-eyebrow">SB19 · We Are Sapiens Tour</div>
+    <h1 class="header-title">Concert Tracker</h1>
+    <p class="header-sub">SMDC Festival Grounds · April 18, 2026</p>
+  </div>
 
-<header>
-  <p class="eyebrow">LIMBO × The Signal Network</p>
-  <h1 class="concert-title">WAS CONCERT — APRIL 18, 2026</h1>
-  <p class="concert-subtitle">SMDC Festival Grounds · Tour Finale</p>
+  <div class="countdown-section">
+    <div class="countdown-label">Time Until Show</div>
+    <div class="countdown-grid">
+      <div class="countdown-unit">
+        <span class="countdown-value" id="days">--</span>
+        <span class="countdown-unit-label">Days</span>
+      </div>
+      <span class="countdown-separator">:</span>
+      <div class="countdown-unit">
+        <span class="countdown-value" id="hours">--</span>
+        <span class="countdown-unit-label">Hours</span>
+      </div>
+      <span class="countdown-separator">:</span>
+      <div class="countdown-unit">
+        <span class="countdown-value" id="mins">--</span>
+        <span class="countdown-unit-label">Mins</span>
+      </div>
+      <span class="countdown-separator">:</span>
+      <div class="countdown-unit">
+        <span class="countdown-value" id="secs">--</span>
+        <span class="countdown-unit-label">Secs</span>
+      </div>
+    </div>
+    <div class="countdown-date">April 18, 2026 · Saturday</div>
+  </div>
 
-  <div class="countdown-wrap" id="countdown">
-    <div class="countdown-unit">
-      <span class="countdown-num" id="cd-days">--</span>
-      <span class="countdown-label">Days</span>
+  <div class="progress-section">
+    <div class="progress-header">
+      <span class="progress-text">2 <span>of 9 tasks complete</span></span>
+      <span class="progress-percent">22%</span>
     </div>
-    <span class="countdown-sep">:</span>
-    <div class="countdown-unit">
-      <span class="countdown-num" id="cd-hours">--</span>
-      <span class="countdown-label">Hours</span>
-    </div>
-    <span class="countdown-sep">:</span>
-    <div class="countdown-unit">
-      <span class="countdown-num" id="cd-mins">--</span>
-      <span class="countdown-label">Mins</span>
-    </div>
-    <span class="countdown-sep">:</span>
-    <div class="countdown-unit">
-      <span class="countdown-num" id="cd-secs">--</span>
-      <span class="countdown-label">Secs</span>
+    <div class="progress-bar">
+      <div class="progress-fill"></div>
     </div>
   </div>
-</header>
 
-<div class="progress-section">
-  <div class="progress-header">
-    <span class="progress-label">Overall Progress</span>
-    <span class="progress-count" id="progress-text">2 <span>of 9 tasks complete</span></span>
+  <div class="tasks-container">
+    <div class="task-section">
+      <div class="section-header">
+        <span class="section-title overdue">Overdue</span>
+        <span class="section-count">2</span>
+      </div>
+      <div class="task-item overdue">
+        <div class="task-info">
+          <div class="task-name">SM Ihawan Strip venue coordination</div>
+          <div class="task-meta">
+            <span class="task-assignee">Cassey</span>
+            <span class="task-due overdue">Was due Mar 10</span>
+          </div>
+        </div>
+        <div class="task-status-dot overdue"></div>
+      </div>
+      <div class="task-item overdue">
+        <div class="task-info">
+          <div class="task-name">Freebies identification + sourcing</div>
+          <div class="task-meta">
+            <span class="task-assignee">Harbies</span>
+            <span class="task-due overdue">Due Mar 31</span>
+          </div>
+        </div>
+        <div class="task-status-dot overdue"></div>
+      </div>
+    </div>
+
+    <div class="task-section">
+      <div class="section-header">
+        <span class="section-title">In Progress</span>
+        <span class="section-count">5</span>
+      </div>
+      <div class="task-item">
+        <div class="task-info">
+          <div class="task-name">Fan Zone activities finalization</div>
+          <div class="task-meta">
+            <span class="task-assignee">Cassey</span>
+          </div>
+        </div>
+        <div class="task-status-dot in-progress"></div>
+      </div>
+      <div class="task-item">
+        <div class="task-info">
+          <div class="task-name">MOA Globe coordination</div>
+          <div class="task-meta">
+            <span class="task-assignee">Cassey</span>
+          </div>
+        </div>
+        <div class="task-status-dot in-progress"></div>
+      </div>
+      <div class="task-item">
+        <div class="task-info">
+          <div class="task-name">Signal light supplier</div>
+          <div class="task-meta">
+            <span class="task-assignee">Sammie</span>
+          </div>
+        </div>
+        <div class="task-status-dot in-progress"></div>
+      </div>
+      <div class="task-item">
+        <div class="task-info">
+          <div class="task-name">Merch costing file</div>
+          <div class="task-meta">
+            <span class="task-assignee">Tere</span>
+          </div>
+        </div>
+        <div class="task-status-dot in-progress"></div>
+      </div>
+      <div class="task-item">
+        <div class="task-info">
+          <div class="task-name">Sticker supplier</div>
+          <div class="task-meta">
+            <span class="task-assignee">Cassey + Tere</span>
+          </div>
+        </div>
+        <div class="task-status-dot in-progress"></div>
+      </div>
+    </div>
+
+    <div class="task-section">
+      <div class="section-header">
+        <span class="section-title done">Done</span>
+        <span class="section-count">2</span>
+      </div>
+      <div class="task-item done">
+        <div class="task-info">
+          <div class="task-name">Table reservation for freebies</div>
+          <div class="task-meta">
+            <span class="task-assignee">Team</span>
+          </div>
+        </div>
+        <div class="task-status-dot done"></div>
+      </div>
+      <div class="task-item done">
+        <div class="task-info">
+          <div class="task-name">Merch catalog (Tank, NFC Keychain, Package)</div>
+          <div class="task-meta">
+            <span class="task-assignee">Tere</span>
+          </div>
+        </div>
+        <div class="task-status-dot done"></div>
+      </div>
+    </div>
   </div>
-  <div class="progress-bar-track">
-    <div class="progress-bar-fill" id="progress-fill" style="width: 22.2%"></div>
+
+  <div class="footer">
+    <span>The Signal Network</span>
+    <span id="last-updated"></span>
   </div>
 </div>
 
-<main>
-
-  <!-- ── OVERDUE ── -->
-  <section class="section-overdue">
-    <div class="section-heading">
-      <span class="section-icon">🔴</span>
-      <span class="section-title">Overdue</span>
-      <span class="section-badge">2 tasks</span>
-    </div>
-
-    <div style="display:flex;flex-direction:column;gap:8px;">
-
-      <div class="card">
-        <div class="card-top">
-          <span class="card-name">SM Ihawan Strip venue coordination</span>
-        </div>
-        <div class="card-meta">
-          <span class="pill pill-owner-red">👤 Cassey</span>
-          <span class="pill pill-overdue">Due Mar 10 · 12 DAYS OVERDUE</span>
-        </div>
-      </div>
-
-      <div class="card">
-        <div class="card-top">
-          <span class="card-name">Freebies identification + sourcing</span>
-        </div>
-        <div class="card-meta">
-          <span class="pill pill-owner-red">👤 Harbies</span>
-          <span class="pill pill-overdue">Due Mar 31 · URGENT</span>
-        </div>
-      </div>
-
-    </div>
-  </section>
-
-  <div class="section-divider"></div>
-
-  <!-- ── IN PROGRESS ── -->
-  <section class="section-progress">
-    <div class="section-heading">
-      <span class="section-icon">🟡</span>
-      <span class="section-title">In Progress</span>
-      <span class="section-badge">5 tasks</span>
-    </div>
-
-    <div style="display:flex;flex-direction:column;gap:8px;">
-
-      <div class="card">
-        <div class="card-top">
-          <span class="card-name">Fan Zone activities finalization</span>
-        </div>
-        <div class="card-meta">
-          <span class="pill pill-owner-yellow">👤 Cassey</span>
-          <span class="pill pill-inprogress">Due Apr 18</span>
-        </div>
-      </div>
-
-      <div class="card">
-        <div class="card-top">
-          <span class="card-name">MOA Globe coordination</span>
-        </div>
-        <div class="card-meta">
-          <span class="pill pill-owner-yellow">👤 Cassey</span>
-          <span class="pill pill-inprogress">Due Apr 18</span>
-        </div>
-      </div>
-
-      <div class="card">
-        <div class="card-top">
-          <span class="card-name">Signal light supplier</span>
-        </div>
-        <div class="card-meta">
-          <span class="pill pill-owner-yellow">👤 Sammie</span>
-          <span class="pill pill-inprogress">Due Apr 18</span>
-        </div>
-      </div>
-
-      <div class="card">
-        <div class="card-top">
-          <span class="card-name">Merch costing file</span>
-        </div>
-        <div class="card-meta">
-          <span class="pill pill-owner-yellow">👤 Tere</span>
-          <span class="pill pill-inprogress">Due Apr 18</span>
-        </div>
-      </div>
-
-      <div class="card">
-        <div class="card-top">
-          <span class="card-name">Sticker supplier</span>
-        </div>
-        <div class="card-meta">
-          <span class="pill pill-owner-yellow">👤 Cassey + Tere</span>
-          <span class="pill pill-inprogress">Due Apr 18</span>
-        </div>
-      </div>
-
-    </div>
-  </section>
-
-  <div class="section-divider"></div>
-
-  <!-- ── DONE ── -->
-  <section class="section-done">
-    <div class="section-heading">
-      <span class="section-icon">✅</span>
-      <span class="section-title">Done</span>
-      <span class="section-badge">2 tasks</span>
-    </div>
-
-    <div style="display:flex;flex-direction:column;gap:8px;">
-
-      <div class="card">
-        <div class="card-top">
-          <span class="card-name">Table reservation for freebies</span>
-        </div>
-        <div class="card-meta">
-          <span class="pill pill-owner-green">👤 Team</span>
-          <span class="pill pill-done">Complete ✓</span>
-        </div>
-      </div>
-
-      <div class="card">
-        <div class="card-top">
-          <span class="card-name">Merch catalog (Tank, NFC Keychain, Package)</span>
-        </div>
-        <div class="card-meta">
-          <span class="pill pill-owner-green">👤 Tere</span>
-          <span class="pill pill-done">Complete ✓</span>
-        </div>
-      </div>
-
-    </div>
-  </section>
-
-</main>
-
-<footer>
-  <strong>LIMBO</strong> &nbsp;·&nbsp; One Blood One Bond &nbsp;·&nbsp; WAS 2026
-</footer>
-
 <script>
-  // ── COUNTDOWN ──
-  const concertDate = new Date('2026-04-18T19:00:00+08:00');
+  // Countdown to April 18, 2026 18:00 PHT
+  const target = new Date('2026-04-18T18:00:00+08:00').getTime();
 
-  function pad(n) { return String(n).padStart(2, '0'); }
+  function updateCountdown() {
+    const now = Date.now();
+    const diff = target - now;
 
-  function tick() {
-    const now = new Date();
-    const diff = concertDate - now;
     if (diff <= 0) {
-      document.getElementById('countdown').innerHTML =
-        '<span style="font-size:18px;letter-spacing:0.12em;color:var(--green)">🎉 IT\'S SHOWTIME</span>';
+      document.getElementById('days').textContent = '00';
+      document.getElementById('hours').textContent = '00';
+      document.getElementById('mins').textContent = '00';
+      document.getElementById('secs').textContent = '00';
       return;
     }
-    const days  = Math.floor(diff / 864e5);
-    const hours = Math.floor((diff % 864e5) / 36e5);
-    const mins  = Math.floor((diff % 36e5) / 6e4);
-    const secs  = Math.floor((diff % 6e4) / 1e3);
-    document.getElementById('cd-days').textContent  = pad(days);
-    document.getElementById('cd-hours').textContent = pad(hours);
-    document.getElementById('cd-mins').textContent  = pad(mins);
-    document.getElementById('cd-secs').textContent  = pad(secs);
+
+    const d = Math.floor(diff / (1000 * 60 * 60 * 24));
+    const h = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+    const m = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+    const s = Math.floor((diff % (1000 * 60)) / 1000);
+
+    document.getElementById('days').textContent = String(d).padStart(2, '0');
+    document.getElementById('hours').textContent = String(h).padStart(2, '0');
+    document.getElementById('mins').textContent = String(m).padStart(2, '0');
+    document.getElementById('secs').textContent = String(s).padStart(2, '0');
   }
 
-  tick();
-  setInterval(tick, 1000);
-</script>
+  updateCountdown();
+  setInterval(updateCountdown, 1000);
 
+  // Last updated timestamp
+  const now = new Date();
+  document.getElementById('last-updated').textContent =
+    'Updated ' + now.toLocaleDateString('en-PH', { month: 'short', day: 'numeric', year: 'numeric', hour: '2-digit', minute: '2-digit' });
+</script>
 </body>
 </html>
