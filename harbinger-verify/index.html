@@ -395,25 +395,25 @@
       autocomplete="off"
       autocorrect="off"
       spellcheck="false"
-      placeholder="I-type ang FB name ng subscriber..."
+      placeholder="Type subscriber's FB name..."
     />
   </div>
-  <p class="search-hint">Mag-type ng kahit anong bahagi ng pangalan</p>
+  <p class="search-hint">Type any part of the name</p>
 </div>
 
 <!-- MAIN CONTENT -->
 <main class="main">
   <div id="searchSection" style="display:none;">
-    <div class="section-label" id="searchLabel">Mga resulta</div>
+    <div class="section-label" id="searchLabel">Results</div>
     <div id="searchResults"></div>
   </div>
 
   <div id="recentSection">
-    <div class="section-label">📋 Mga Na-verify Kahapon (last 10)</div>
+    <div class="section-label">📋 Recent Actions (last 10)</div>
     <div id="recentLog"></div>
     <div class="export-wrap">
       <button class="btn-export" onclick="exportCSV()">
-        📤 I-export bilang CSV (para kay Josh)
+        📤 Export as CSV
       </button>
     </div>
   </div>
@@ -439,7 +439,7 @@ fetch('data/pending-members.json')
   })
   .catch(() => {
     // Fallback: show demo notice
-    showToast('⚠️ Walang data file. Subukan mo i-load locally.', 4000);
+    showToast('⚠️ No data file found. Try loading locally.', 4000);
   });
 
 // ═══════════════════════════════════════════════
@@ -485,9 +485,9 @@ function scoreClass(score) {
   return 'score-red';
 }
 function scoreLabel(score) {
-  if (score >= 85) return '✅ Mataas';
-  if (score >= 70) return '⚠️ Kailangan tingnan';
-  return '❓ Hindi tiyak';
+  if (score >= 85) return '✅ High';
+  if (score >= 70) return '⚠️ Review needed';
+  return '❓ Uncertain';
 }
 function confidenceText(score) {
   if (score >= 85) return 'HIGH';
@@ -508,13 +508,13 @@ function renderCard(m) {
   let actionHtml = '';
   if (currentStatus) {
     const icons = { verified: '✅', flagged: '⚠️', rejected: '❌' };
-    const labels = { verified: 'Verified na!', flagged: 'Naka-flag', rejected: 'Rejected' };
+    const labels = { verified: 'Verified ✓', flagged: 'Flagged', rejected: 'Rejected' };
     actionHtml = `<div class="status-banner ${currentStatus}">${icons[currentStatus]} ${labels[currentStatus]}</div>`;
   } else {
     actionHtml = `
       <div class="card-actions">
-        <button class="btn btn-verify"  onclick="doAction(${m.id},'verified')">✅ Verified na!</button>
-        <button class="btn btn-flag"    onclick="doAction(${m.id},'flagged')">⚠️ I-flag</button>
+        <button class="btn btn-verify"  onclick="doAction(${m.id},'verified')">✅ Verify</button>
+        <button class="btn btn-flag"    onclick="doAction(${m.id},'flagged')">⚠️ Flag</button>
         <button class="btn btn-reject"  onclick="doAction(${m.id},'rejected')">❌ Reject</button>
       </div>`;
   }
@@ -558,14 +558,14 @@ function renderRecent() {
       <div class="log-card">
         <div class="empty-state">
           <div class="emoji">📭</div>
-          <p>Wala pang aksyon. Magsimula ka na mag-verify!</p>
+          <p>No actions yet. Start verifying!</p>
         </div>
       </div>`;
     return;
   }
 
   const icons  = { verified: '✅', flagged: '⚠️', rejected: '❌' };
-  const labels = { verified: 'Verified na!', flagged: 'Naka-flag', rejected: 'Rejected' };
+  const labels = { verified: 'Verified ✓', flagged: 'Flagged', rejected: 'Rejected' };
 
   const items = log.map(entry => {
     const m = members.find(x => x.id === entry.memberId);
@@ -613,9 +613,9 @@ function doAction(memberId, action) {
   }
 
   const toastMsg = {
-    verified: `✅ Verified na si ${m.submittedFbName}!`,
-    flagged:  `⚠️ Na-flag si ${m.submittedFbName}`,
-    rejected: `❌ Rejected si ${m.submittedFbName}`
+    verified: `✅ ${m.submittedFbName} verified`,
+    flagged:  `⚠️ ${m.submittedFbName} flagged`,
+    rejected: `❌ ${m.submittedFbName} rejected`
   };
   showToast(toastMsg[action]);
   renderStats();
@@ -646,14 +646,14 @@ document.getElementById('searchInput').addEventListener('input', function() {
 
     const found = searchMembers(q);
     label.textContent = found.length
-      ? `${found.length} resulta para sa "${q}"`
-      : `Walang resulta para sa "${q}"`;
+      ? `${found.length} results for "${q}"`
+      : `No results for "${q}"`;
 
     if (!found.length) {
       results.innerHTML = `
         <div class="empty-state">
           <div class="emoji">🤷</div>
-          <p>Walang nakita. Subukan ng ibang spelling.</p>
+          <p>No matches found. Try a different spelling.</p>
         </div>`;
       return;
     }
@@ -667,7 +667,7 @@ document.getElementById('searchInput').addEventListener('input', function() {
 // ═══════════════════════════════════════════════
 function exportCSV() {
   if (!actionLog.length) {
-    showToast('📭 Wala pang aksyon para i-export.');
+    showToast('📭 No actions to export.');
     return;
   }
 
@@ -690,7 +690,7 @@ function exportCSV() {
   a.click();
   URL.revokeObjectURL(url);
 
-  showToast(`✅ Nag-export ng ${actionLog.length} aksyon!`);
+  showToast(`✅ Exported ${actionLog.length} actions`);
 }
 
 // ═══════════════════════════════════════════════
