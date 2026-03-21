@@ -1,0 +1,851 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>LIMBO // COMMUNITY HEALTH</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+/* ============================================================
+   SIGNAL NETWORK — LIMBO COMMUNITY HEALTH DASHBOARD
+   Design: Bloomberg terminal × Signal Network dark aesthetic
+   Palette: Black / Charcoal / Silver + accent signals
+   ============================================================ */
+
+:root {
+  --bg:         #0A0A0A;
+  --bg-card:    #141414;
+  --bg-section: #1A1A1A;
+  --border:     #2A2A2A;
+  --border-mid: #3A3A3A;
+  --silver:     #CFCFCF;
+  --chrome:     #DCE0E3;
+  --muted:      #666666;
+  --dim:        #3D3D3D;
+  --text:       #EFEFEF;
+  --text-sub:   #888888;
+
+  /* Status signals */
+  --sig-green:  #4ADE80;
+  --sig-red:    #F87171;
+  --sig-yellow: #FACC15;
+  --sig-white:  #FFFFFF;
+
+  --radius: 6px;
+  --font: 'Inter', system-ui, -apple-system, sans-serif;
+  --mono: 'SF Mono', 'Fira Code', 'Cascadia Code', monospace;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { height: 100%; }
+body {
+  font-family: var(--font);
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100%;
+  font-size: 14px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ── HEADER ─────────────────────────────────────────────── */
+.header {
+  position: sticky;
+  top: 0;
+  z-index: 200;
+  background: var(--bg);
+  border-bottom: 1px solid var(--border);
+  padding: 0 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 52px;
+  gap: 16px;
+}
+
+.header-brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.brand-mark {
+  width: 28px;
+  height: 28px;
+  border: 1.5px solid var(--silver);
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  color: var(--silver);
+}
+
+.brand-title {
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--chrome);
+}
+
+.brand-title span {
+  color: var(--muted);
+  font-weight: 400;
+  margin: 0 4px;
+}
+
+.header-meta {
+  font-size: 11px;
+  color: var(--text-sub);
+  font-family: var(--mono);
+  letter-spacing: 0.06em;
+  text-align: right;
+}
+
+.header-date {
+  font-size: 11px;
+  color: var(--muted);
+  font-family: var(--mono);
+  letter-spacing: 0.04em;
+}
+
+/* ── LAYOUT ─────────────────────────────────────────────── */
+.main {
+  padding: 24px 20px 40px;
+  max-width: 900px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* ── SECTION LABELS ─────────────────────────────────────── */
+.section-label {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 10px;
+}
+
+/* ── SERVER STATS ────────────────────────────────────────── */
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+}
+
+@media (min-width: 600px) {
+  .stats-grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+.stat-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  position: relative;
+  overflow: hidden;
+}
+
+.stat-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 2px;
+  background: var(--border-mid);
+}
+
+.stat-card.alert::before { background: var(--sig-red); }
+.stat-card.positive::before { background: var(--sig-green); }
+.stat-card.neutral::before { background: var(--dim); }
+
+.stat-label {
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-sub);
+}
+
+.stat-value {
+  font-size: 26px;
+  font-weight: 700;
+  font-family: var(--mono);
+  color: var(--text);
+  line-height: 1;
+}
+
+.stat-badge {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.badge-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+}
+
+.badge-dot.red   { background: var(--sig-red); box-shadow: 0 0 6px var(--sig-red); }
+.badge-dot.green { background: var(--sig-green); box-shadow: 0 0 6px var(--sig-green); }
+.badge-dot.grey  { background: var(--dim); }
+
+/* ── REVENUE ─────────────────────────────────────────────── */
+.revenue-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 20px;
+}
+
+.revenue-tiers {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.tier-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 12px;
+  background: var(--bg-section);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+}
+
+.tier-name {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--silver);
+  letter-spacing: 0.04em;
+}
+
+.tier-platform {
+  font-size: 10px;
+  color: var(--text-sub);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.tier-price {
+  font-size: 13px;
+  font-weight: 700;
+  font-family: var(--mono);
+  color: var(--sig-green);
+}
+
+.revenue-estimate {
+  border-top: 1px solid var(--border);
+  padding-top: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.estimate-label {
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-sub);
+}
+
+.estimate-value {
+  font-size: 20px;
+  font-weight: 700;
+  font-family: var(--mono);
+  color: var(--chrome);
+  letter-spacing: -0.02em;
+}
+
+.estimate-sub {
+  font-size: 10px;
+  color: var(--muted);
+  text-align: right;
+  margin-top: 2px;
+}
+
+/* ── COMPETITOR TABLE ────────────────────────────────────── */
+.table-wrapper {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+}
+
+.comp-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.comp-table th {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--muted);
+  padding: 10px 14px;
+  text-align: left;
+  border-bottom: 1px solid var(--border);
+  background: var(--bg-section);
+}
+
+.comp-table td {
+  padding: 11px 14px;
+  font-size: 13px;
+  color: var(--text-sub);
+  border-bottom: 1px solid var(--border);
+  vertical-align: middle;
+}
+
+.comp-table tr:last-child td { border-bottom: none; }
+
+.comp-table tr.highlight td {
+  color: var(--text);
+  font-weight: 600;
+  background: rgba(255,255,255,0.03);
+}
+
+.comp-table tr.highlight td:first-child {
+  border-left: 2px solid var(--silver);
+  padding-left: 12px;
+}
+
+.member-count {
+  font-family: var(--mono);
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--silver);
+}
+
+tr.highlight .member-count {
+  color: var(--chrome);
+}
+
+.status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  padding: 3px 8px;
+  border-radius: 3px;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid var(--border);
+}
+
+.status-badge.locked {
+  color: var(--muted);
+}
+
+.status-badge.open {
+  color: var(--sig-green);
+  border-color: rgba(74, 222, 128, 0.2);
+  background: rgba(74, 222, 128, 0.06);
+}
+
+tr.highlight .status-badge.open {
+  border-color: rgba(74, 222, 128, 0.4);
+  background: rgba(74, 222, 128, 0.1);
+}
+
+.rank-bar-wrap {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.rank-bar {
+  height: 3px;
+  border-radius: 2px;
+  background: var(--border);
+  flex: 1;
+  min-width: 40px;
+  overflow: hidden;
+}
+
+.rank-bar-fill {
+  height: 100%;
+  border-radius: 2px;
+  background: var(--muted);
+  transition: width 0.6s ease;
+}
+
+tr.highlight .rank-bar-fill {
+  background: var(--silver);
+}
+
+/* ── CHANNEL HEALTH ──────────────────────────────────────── */
+.channels-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.channel-row {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 14px 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.channel-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.channel-sig {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.channel-sig.green  { background: var(--sig-green); box-shadow: 0 0 8px var(--sig-green); }
+.channel-sig.red    { background: var(--sig-red); box-shadow: 0 0 8px var(--sig-red); }
+.channel-sig.yellow { background: var(--sig-yellow); box-shadow: 0 0 8px var(--sig-yellow); }
+
+.channel-name {
+  font-size: 13px;
+  font-weight: 600;
+  font-family: var(--mono);
+  color: var(--text);
+}
+
+.channel-status {
+  font-size: 11px;
+  color: var(--text-sub);
+  letter-spacing: 0.04em;
+}
+
+.channel-right {
+  text-align: right;
+}
+
+.channel-tag {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  padding: 3px 8px;
+  border-radius: 3px;
+}
+
+.channel-tag.active  { color: var(--sig-green); background: rgba(74,222,128,0.08); border: 1px solid rgba(74,222,128,0.2); }
+.channel-tag.dead    { color: var(--sig-red); background: rgba(248,113,113,0.08); border: 1px solid rgba(248,113,113,0.2); }
+
+.channel-detail {
+  font-size: 10px;
+  color: var(--muted);
+  margin-top: 3px;
+}
+
+/* ── ACTION ITEMS ────────────────────────────────────────── */
+.actions-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.action-row {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 14px 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.action-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.action-icon {
+  font-size: 14px;
+  width: 20px;
+  text-align: center;
+  flex-shrink: 0;
+}
+
+.action-text {
+  font-size: 13px;
+  color: var(--text);
+  line-height: 1.4;
+}
+
+.action-text.done {
+  color: var(--muted);
+  text-decoration: line-through;
+  text-decoration-color: var(--dim);
+}
+
+.action-priority {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  padding: 3px 8px;
+  border-radius: 3px;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.action-priority.done   { color: var(--muted); background: rgba(255,255,255,0.04); border: 1px solid var(--border); }
+.action-priority.high   { color: var(--sig-green); background: rgba(74,222,128,0.08); border: 1px solid rgba(74,222,128,0.2); }
+.action-priority.urgent { color: var(--sig-red); background: rgba(248,113,113,0.08); border: 1px solid rgba(248,113,113,0.2); }
+.action-priority.medium { color: var(--sig-yellow); background: rgba(250,204,21,0.08); border: 1px solid rgba(250,204,21,0.2); }
+
+/* ── FOOTER ─────────────────────────────────────────────── */
+.footer {
+  border-top: 1px solid var(--border);
+  padding: 14px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.footer-sig {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--dim);
+}
+
+.footer-uptime {
+  font-size: 10px;
+  color: var(--dim);
+  font-family: var(--mono);
+}
+
+/* ── UTILITY ─────────────────────────────────────────────── */
+.section { }
+
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header class="header">
+  <div class="header-brand">
+    <div class="brand-mark">LB</div>
+    <div>
+      <div class="brand-title">LIMBO<span>//</span>COMMUNITY HEALTH</div>
+    </div>
+  </div>
+  <div class="header-meta">
+    <div class="header-date" id="current-date">—</div>
+    <div style="font-size:10px;color:var(--dim);margin-top:2px;letter-spacing:0.08em;">ONE BLOOD ONE BOND</div>
+  </div>
+</header>
+
+<!-- MAIN -->
+<main class="main">
+
+  <!-- SERVER STATS -->
+  <section class="section">
+    <div class="section-label">Server Stats</div>
+    <div class="stats-grid">
+
+      <div class="stat-card neutral">
+        <div class="stat-label">Total Members</div>
+        <div class="stat-value">3,840</div>
+        <div class="stat-badge" style="color:var(--text-sub);">
+          <span class="badge-dot grey"></span>
+          <span>All tiers</span>
+        </div>
+      </div>
+
+      <div class="stat-card positive">
+        <div class="stat-label">Online Now</div>
+        <div class="stat-value">200</div>
+        <div class="stat-badge" style="color:var(--sig-green);">
+          <span class="badge-dot green"></span>
+          <span>Live</span>
+        </div>
+      </div>
+
+      <div class="stat-card alert">
+        <div class="stat-label">Pending Verification</div>
+        <div class="stat-value">169</div>
+        <div class="stat-badge" style="color:var(--sig-red);">
+          <span class="badge-dot red"></span>
+          <span>Action needed</span>
+        </div>
+      </div>
+
+      <div class="stat-card neutral">
+        <div class="stat-label">Fresh Blood Trials</div>
+        <div class="stat-value">241</div>
+        <div class="stat-badge" style="color:var(--text-sub);">
+          <span class="badge-dot grey"></span>
+          <span>Active trials</span>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- REVENUE -->
+  <section class="section">
+    <div class="section-label">Revenue Estimate</div>
+    <div class="revenue-card">
+      <div class="revenue-tiers">
+
+        <div class="tier-row">
+          <div>
+            <div class="tier-name">Subscribers</div>
+            <div class="tier-platform">Facebook</div>
+          </div>
+          <div class="tier-price">₱73.50 / mo</div>
+        </div>
+
+        <div class="tier-row">
+          <div>
+            <div class="tier-name">Nightstalkers</div>
+            <div class="tier-platform">YouTube</div>
+          </div>
+          <div class="tier-price">₱99 / mo</div>
+        </div>
+
+        <div class="tier-row">
+          <div>
+            <div class="tier-name">Vanguards</div>
+            <div class="tier-platform">YouTube</div>
+          </div>
+          <div class="tier-price">₱199 / mo</div>
+        </div>
+
+      </div>
+
+      <div class="revenue-estimate">
+        <div>
+          <div class="estimate-label">Monthly Estimate</div>
+          <div style="font-size:10px;color:var(--muted);margin-top:2px;letter-spacing:0.04em;">All tiers combined</div>
+        </div>
+        <div>
+          <div class="estimate-value">₱250K – ₱350K</div>
+          <div class="estimate-sub">on ~₱30K/mo budget</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- COMPETITOR COMPARISON -->
+  <section class="section">
+    <div class="section-label">Competitor Landscape</div>
+    <div class="table-wrapper">
+      <table class="comp-table">
+        <thead>
+          <tr>
+            <th>Group</th>
+            <th>Members</th>
+            <th>Reach</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>The Pack <span style="color:var(--dim);">(Pablo)</span></td>
+            <td>
+              <div class="rank-bar-wrap">
+                <span class="member-count">7.8K</span>
+                <div class="rank-bar"><div class="rank-bar-fill" style="width:100%;"></div></div>
+              </div>
+            </td>
+            <td style="color:var(--dim);font-size:11px;">#1</td>
+            <td><span class="status-badge locked">🔒 Locked</span></td>
+          </tr>
+          <tr>
+            <td>FLEET <span style="color:var(--dim);">(Ken)</span></td>
+            <td>
+              <div class="rank-bar-wrap">
+                <span class="member-count">5.7K</span>
+                <div class="rank-bar"><div class="rank-bar-fill" style="width:73%;"></div></div>
+              </div>
+            </td>
+            <td style="color:var(--dim);font-size:11px;">#2</td>
+            <td><span class="status-badge locked">🔒 Locked</span></td>
+          </tr>
+          <tr>
+            <td>OnlyFARMS <span style="color:var(--dim);">(Stell)</span></td>
+            <td>
+              <div class="rank-bar-wrap">
+                <span class="member-count">4.8K</span>
+                <div class="rank-bar"><div class="rank-bar-fill" style="width:61%;"></div></div>
+              </div>
+            </td>
+            <td style="color:var(--dim);font-size:11px;">#3</td>
+            <td><span class="status-badge locked">🔒 Locked</span></td>
+          </tr>
+          <tr>
+            <td>Corn Hub <span style="color:var(--dim);">(Justin)</span></td>
+            <td>
+              <div class="rank-bar-wrap">
+                <span class="member-count">4.1K</span>
+                <div class="rank-bar"><div class="rank-bar-fill" style="width:52%;"></div></div>
+              </div>
+            </td>
+            <td style="color:var(--dim);font-size:11px;">#4</td>
+            <td><span class="status-badge open">● Open</span></td>
+          </tr>
+          <tr class="highlight">
+            <td>LIMBO <span style="color:var(--text-sub);">(Josh)</span></td>
+            <td>
+              <div class="rank-bar-wrap">
+                <span class="member-count">3.8K</span>
+                <div class="rank-bar"><div class="rank-bar-fill" style="width:49%;background:var(--silver);"></div></div>
+              </div>
+            </td>
+            <td style="color:var(--text-sub);font-size:11px;">#5</td>
+            <td><span class="status-badge open">● Open</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- CHANNEL HEALTH -->
+  <section class="section">
+    <div class="section-label">Channel Health</div>
+    <div class="channels-list">
+
+      <div class="channel-row">
+        <div class="channel-left">
+          <div class="channel-sig green"></div>
+          <div>
+            <div class="channel-name">#chatting</div>
+            <div class="channel-status">General community activity</div>
+          </div>
+        </div>
+        <div class="channel-right">
+          <div class="channel-tag active">Active</div>
+        </div>
+      </div>
+
+      <div class="channel-row">
+        <div class="channel-left">
+          <div class="channel-sig green"></div>
+          <div>
+            <div class="channel-name">#merch</div>
+            <div class="channel-status">Drop-related engagement</div>
+          </div>
+        </div>
+        <div class="channel-right">
+          <div class="channel-tag active">High Engagement</div>
+          <div class="channel-detail">193 reactions on last post</div>
+        </div>
+      </div>
+
+      <div class="channel-row">
+        <div class="channel-left">
+          <div class="channel-sig red"></div>
+          <div>
+            <div class="channel-name">#suggestions-for-josh</div>
+            <div class="channel-status">Community feedback channel</div>
+          </div>
+        </div>
+        <div class="channel-right">
+          <div class="channel-tag dead">Dead</div>
+          <div class="channel-detail">2+ weeks no activity</div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ACTION ITEMS -->
+  <section class="section">
+    <div class="section-label">Action Items</div>
+    <div class="actions-list">
+
+      <div class="action-row">
+        <div class="action-left">
+          <div class="action-icon">✅</div>
+          <div class="action-text done">Toggle Server Members Intent</div>
+        </div>
+        <div class="action-priority done">Done</div>
+      </div>
+
+      <div class="action-row" style="border-color:rgba(248,113,113,0.25);">
+        <div class="action-left">
+          <div class="action-icon">🔴</div>
+          <div class="action-text">Fix FB verification — 169 members pending</div>
+        </div>
+        <div class="action-priority urgent">Urgent</div>
+      </div>
+
+      <div class="action-row" style="border-color:rgba(250,204,21,0.2);">
+        <div class="action-left">
+          <div class="action-icon">🟡</div>
+          <div class="action-text">Revive #suggestions-for-josh channel</div>
+        </div>
+        <div class="action-priority medium">Medium</div>
+      </div>
+
+      <div class="action-row" style="border-color:rgba(74,222,128,0.2);">
+        <div class="action-left">
+          <div class="action-icon">🟢</div>
+          <div class="action-text">Next drop momentum — community primed</div>
+        </div>
+        <div class="action-priority high">HIGH 🔥</div>
+      </div>
+
+    </div>
+  </section>
+
+</main>
+
+<!-- FOOTER -->
+<footer class="footer">
+  <div class="footer-sig">THE SIGNAL NETWORK — LIMBO OPS</div>
+  <div class="footer-uptime" id="footer-ts">—</div>
+</footer>
+
+<script>
+  // Inject current date
+  (function() {
+    const now = new Date();
+    const opts = { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric' };
+    const dateStr = now.toLocaleDateString('en-PH', opts).toUpperCase();
+    document.getElementById('current-date').textContent = dateStr;
+
+    const ts = now.toLocaleString('en-PH', {
+      month: 'short', day: 'numeric', year: 'numeric',
+      hour: '2-digit', minute: '2-digit', timeZoneName: 'short',
+      timeZone: 'Asia/Manila'
+    });
+    document.getElementById('footer-ts').textContent = 'Last updated: ' + ts;
+  })();
+</script>
+
+</body>
+</html>
